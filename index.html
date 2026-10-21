@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<meta name="description" content="Offline-first field tool for GPS coordinates, distance, and forward/reverse bearings.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GeoBearing">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>GeoBearing AI — Field Navigator</title>
+<style>
+:root{color-scheme:light dark;--bg:#f2f6fa;--card:#fff;--ink:#13283c;--muted:#61758a;--line:#d9e3ec;--brand:#116b78;--brand2:#164e63;--good:#18794e;--warn:#a15c00;--danger:#b42318;--shadow:0 8px 24px #15334b12}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1823;--card:#142433;--ink:#edf5fb;--muted:#a6bacb;--line:#2c4152;--brand:#65c5ca;--brand2:#174957;--good:#75d6a2;--warn:#f3c477;--danger:#ff9b91;--shadow:0 8px 24px #0003}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{max-width:780px;margin:auto;padding:16px 14px 36px}.top{display:flex;align-items:center;gap:12px;margin:4px 0 18px}.logo{width:50px;height:50px;border-radius:15px;background:var(--brand2);color:white;display:grid;place-items:center;font-size:28px}.top h1{font-size:21px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:3px}.pill{margin-left:auto;border:1px solid var(--line);border-radius:99px;padding:6px 9px;font-size:11px;color:var(--muted)}.nav{display:flex;gap:7px;overflow:auto;margin-bottom:14px}.nav button{flex:1;min-width:max-content;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);padding:10px 12px;font-size:13px}.nav button.active{background:var(--brand2);color:white;border-color:var(--brand2)}.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:13px;box-shadow:var(--shadow)}.panel h2{font-size:15px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:12px 10px;outline-offset:2px}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}.btn{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:650}.btn.primary{background:var(--brand2);color:#fff;border-color:var(--brand2)}.btn.soft{border-color:transparent;background:color-mix(in srgb,var(--brand) 13%,var(--card));color:var(--ink)}.btn.danger{color:var(--danger)}.small{font-size:11px;color:var(--muted);line-height:1.5}.status{font-size:12px;color:var(--muted);margin-top:8px;min-height:17px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:13px}.stat .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.stat .v{font-size:23px;font-weight:800;letter-spacing:-.03em;margin:5px 0 2px;overflow-wrap:anywhere}.stat .s{font-size:11px;color:var(--muted)}.bearingrow{display:flex;align-items:center;gap:13px}.dial{width:108px;height:108px;flex:none}.resultline{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}.resultline:last-child{border-bottom:0}.resultline strong{text-align:right;overflow-wrap:anywhere}.hidden{display:none!important}.mapbox{width:100%;height:240px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;text-align:center;padding:12px;overflow:hidden}.mapbox svg{width:100%;height:100%;max-height:230px}.badge{font-size:11px;border-radius:99px;padding:5px 8px;background:color-mix(in srgb,var(--good) 14%,var(--card));color:var(--good)}.saved{padding:10px 0;border-bottom:1px solid var(--line)}.saved:last-child{border-bottom:0}.saved .meta{font-size:11px;color:var(--muted);margin:4px 0}.saved button{margin:3px 5px 0 0}.foot{text-align:center;color:var(--muted);font-size:11px;line-height:1.6;padding:6px 10px 20px}.toast{position:sticky;top:5px;z-index:5;background:var(--brand2);color:#fff;border-radius:10px;padding:10px;margin-bottom:10px;font-size:12px;display:none}@media(min-width:620px){.app{padding:24px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:13px}.twocol .panel{height:100%}.stat .v{font-size:28px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top"><div class="logo">⌖</div><div><h1>GeoBearing AI</h1><div class="sub">GPS · Field navigation · VSAT alignment</div></div><span class="pill">FIELD TOOL v1.0</span></header>
+<div class="panel" id="pwaPanel" style="padding:11px 13px;margin-top:-5px">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between">
+<div><strong style="font-size:13px">Install & offline use</strong><div class="small" id="pwaStatus">Checking app support…</div></div>
+<button class="btn primary" id="installApp" hidden>＋ Install app</button>
+</div><div class="small" id="secureHint" style="margin-top:6px"></div></div>
+<div id="toast" class="toast" role="status"></div>
+<nav class="nav" aria-label="Main sections"><button class="active" data-tab="calc">Calculator</button><button data-tab="map">Map & compass</button><button data-tab="saved">Saved sites</button><button data-tab="help">Guide</button></nav>
+<section id="tab-calc">
+<div class="stats">
+<div class="stat"><div class="k">Surface distance</div><div class="v" id="distance">—</div><div class="s" id="distanceSub">Enter two valid points</div></div>
+<div class="stat"><div class="k">Initial bearing A → B</div><div class="v" id="bearing">—</div><div class="s" id="bearingDir">True-north reference</div></div>
+</div>
+<div class="panel" style="margin-top:13px">
+<h2>Point A <span class="small">· Start / origin</span></h2>
+<div class="grid"><div class="field"><label for="latA">Latitude</label><input id="latA" type="number" step="any" inputmode="decimal" placeholder="e.g. 5.99064"></div><div class="field"><label for="lonA">Longitude</label><input id="lonA" type="number" step="any" inputmode="decimal" placeholder="e.g. 5.01637"></div></div>
+<div class="actions"><button class="btn primary" id="gpsA">◎ Capture GPS A</button><button class="btn" id="trackA">▶ Track A</button><button class="btn soft" id="labelA">Name point A</button></div><div id="statusA" class="status">Manual coordinates work without GPS.</div>
+</div>
+<div style="display:flex;justify-content:center;margin:-4px 0 9px"><button class="btn" id="swap">⇅ Swap A and B</button></div>
+<div class="panel">
+<h2>Point B <span class="small">· Destination / second site</span></h2>
+<div class="grid"><div class="field"><label for="latB">Latitude</label><input id="latB" type="number" step="any" inputmode="decimal" placeholder="e.g. 6.52440"></div><div class="field"><label for="lonB">Longitude</label><input id="lonB" type="number" step="any" inputmode="decimal" placeholder="e.g. 3.37920"></div></div>
+<div class="actions"><button class="btn primary" id="gpsB">◎ Capture GPS B</button><button class="btn" id="trackB">▶ Track B</button><button class="btn soft" id="labelB">Name point B</button></div><div id="statusB" class="status">Capture another position or enter a known site.</div>
+</div>
+<div class="panel"><h2>Display settings</h2><div class="grid"><div class="field"><label for="format">Coordinate format</label><select id="format"><option value="dd">Decimal degrees (DD)</option><option value="dm">Degrees decimal minutes (DDM)</option><option value="dms">Degrees-minutes-seconds (DMS)</option><option value="signed">Signed decimal</option></select></div><div class="field"><label for="unit">Distance unit</label><select id="unit"><option value="km">Kilometres</option><option value="m">Metres</option><option value="mi">Miles</option><option value="ft">Feet</option><option value="nmi">Nautical miles</option></select></div><div class="field"><label for="declination">Magnetic declination (°)</label><input id="declination" type="number" step=".01" inputmode="decimal" value="0"></div><div class="field"><label for="precision">Bearing precision</label><select id="precision"><option value="0">0 decimal places</option><option value="1">1 decimal place</option><option value="2" selected>2 decimal places</option><option value="3">3 decimal places</option></select></div></div><p class="small">Declination is east-positive and west-negative. Enter a verified local value to estimate magnetic bearing; zero leaves true bearing unchanged.</p><div class="actions"><button class="btn primary" id="copy">Copy full report</button><button class="btn" id="download">Export report .txt</button><button class="btn" id="share">Share report</button></div><div id="copyStatus" class="status"></div></div>
+<div class="panel"><h2>Calculated results</h2><div class="resultline"><span>A → B · initial true bearing</span><strong id="ab">—</strong></div><div class="resultline"><span>A → B · compass direction</span><strong id="abDir">—</strong></div><div class="resultline"><span>B → A · initial true bearing</span><strong id="ba">—</strong></div><div class="resultline"><span>B → A · compass direction</span><strong id="baDir">—</strong></div><div class="resultline"><span>Magnetic A → B estimate</span><strong id="magAB">—</strong></div><div class="resultline"><span>Magnetic B → A estimate</span><strong id="magBA">—</strong></div><div class="resultline"><span>Point A (selected format)</span><strong id="fmtA">—</strong></div><div class="resultline"><span>Point B (selected format)</span><strong id="fmtB">—</strong></div><div class="resultline"><span>GPS accuracy</span><strong id="accuracy">Manual / unknown</strong></div><p class="small">These are initial geodesic bearings, not simply 180° apart for every long route. At very short distances, GPS noise can make the bearing unstable.</p></div>
+</section>
+<section id="tab-map" class="hidden">
+<div class="panel"><h2>Compass & point relationship</h2><div class="bearingrow"><svg id="dial" class="dial" viewBox="0 0 120 120" aria-label="Bearing compass"><circle cx="60" cy="60" r="54" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="60" cy="60" r="43" fill="none" stroke="var(--line)"/><text x="60" y="17" text-anchor="middle" font-size="11" fill="var(--ink)">N</text><text x="103" y="64" text-anchor="middle" font-size="10" fill="var(--muted)">E</text><text x="60" y="111" text-anchor="middle" font-size="10" fill="var(--muted)">S</text><text x="17" y="64" text-anchor="middle" font-size="10" fill="var(--muted)">W</text><g id="needle" transform="rotate(0 60 60)"><path d="M60 27 L51 65 L60 59 L69 65 Z" fill="#e05b48"/><path d="M60 93 L51 58 L60 64 L69 58 Z" fill="var(--muted)"/></g><circle cx="60" cy="60" r="4" fill="var(--brand)"/></svg><div><div class="small">Forward bearing</div><div id="dialBearing" style="font-size:25px;font-weight:800">—</div><div id="dialDirection" class="small">Enter coordinates</div><div class="small" style="margin-top:8px">This dial points to the computed true bearing. It is not a live magnetic compass sensor.</div></div></div></div>
+<div class="panel"><h2>Point map (schematic)</h2><div id="mapbox" class="mapbox"><div><strong>Enter both points</strong><br><span class="small">A local schematic will appear here. No map tiles or internet are required.</span></div></div><p class="small">The schematic shows relative direction only and is not a geographic map or navigation route.</p></div>
+<div class="panel"><h2>Field alignment notes</h2><div class="resultline"><span>Azimuth A → B</span><strong id="azAB">—</strong></div><div class="resultline"><span>Reverse azimuth B → A</span><strong id="azBA">—</strong></div><div class="resultline"><span>Magnetic correction entered</span><strong id="declShow">0°</strong></div><p class="small">For antenna pointing, use the site coordinates and the satellite's orbital longitude with a dedicated satellite look-angle calculation. This two-point bearing is not satellite azimuth by itself.</p></div>
+</section>
+<section id="tab-saved" class="hidden"><div class="panel"><h2>Saved field sites</h2><p class="small">Save A/B pairs on this device, reload a saved pair, or delete old records. Data remains in this browser's local storage when available.</p><div class="actions"><button class="btn primary" id="savePair">＋ Save current pair</button><button class="btn" id="exportSites">Export sites JSON</button><button class="btn" id="importSites">Import sites JSON</button><input id="importFile" type="file" accept=".json,application/json" class="hidden"></div><div id="savedList" style="margin-top:12px"></div><div id="savedStatus" class="status"></div></div></section>
+<section id="tab-help" class="hidden"><div class="panel"><h2>Quick guide</h2><div class="resultline"><span>1. Choose points</span><strong>GPS or manual</strong></div><div class="resultline"><span>2. Check accuracy</span><strong>Wait for GPS fix</strong></div><div class="resultline"><span>3. Read bearing</span><strong>Clockwise from true north</strong></div><div class="resultline"><span>4. Field report</span><strong>Copy / export / share</strong></div><div class="resultline"><span>5. Save sites</span><strong>Device-local storage</strong></div><h2 style="margin-top:18px">Important limitations</h2><p class="small">GPS permission help: Android Settings → Apps → GeoBearing AI (or Chrome) → Permissions → Location → Allow while using the app; enable Use precise location. In Chrome also check ⋮ → Settings → Site settings → Location and allow this website. Turn on the phone Location quick setting. If permission was previously denied, change it in Settings before retrying. GPS requires HTTPS (except localhost); opening a downloaded HTML file or an unsupported preview may block it. Test outdoors and keep the app foregrounded during tracking.</p><p class="small">Distance is a spherical great-circle approximation using a mean Earth radius. Bearings are initial bearings. Coordinate input range is latitude −90…90 and longitude −180…180. Use a verified magnetic declination value; it changes with location and date.</p><h2 style="margin-top:18px">Privacy</h2><p class="small">This prototype performs calculations in your browser and does not send coordinates to a server. Saved records use local storage where supported. Avoid saving sensitive site coordinates on a shared device.</p></div></section>
+<footer class="foot">GeoBearing AI · Local-first prototype · Check GPS accuracy before field decisions.</footer>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+let labels={a:'Point A',b:'Point B'},accuracy={a:null,b:null},watch={a:null,b:null},lastReport='';
+const storageKey='geobearing-ai-sites-v1';
+function point(p){const la=$('lat'+p.toUpperCase()).value,lo=$('lon'+p.toUpperCase()).value;if(la.trim()===''||lo.trim()==='')return null;const lat=Number(la),lon=Number(lo);if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return null;return {lat,lon}}
+function rad(d){return d*Math.PI/180}
+function bearing(a,b){const p1=rad(a.lat),p2=rad(b.lat),dl=rad(b.lon-a.lon);return (Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI+360)%360}
+function distance(a,b){const dp=rad(b.lat-a.lat),dl=rad(b.lon-a.lon),p1=rad(a.lat),p2=rad(b.lat),h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 6371008.8*2*Math.atan2(Math.sqrt(Math.max(0,h)),Math.sqrt(Math.max(0,1-h)))}
+function dir(v){return ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(v/22.5)%16]}
+function n(v){return Number(v).toFixed(Number($('precision').value))}
+function coord(v,axis){let h=axis==='lat'?(v<0?'S':'N'):(v<0?'W':'E'),x=Math.abs(v),mode=$('format').value;if(mode==='signed')return Number(v).toFixed(6)+'°';if(mode==='dd')return x.toFixed(6)+'° '+h;let d=Math.floor(x),mm=(x-d)*60,m=Math.floor(mm),s=(mm-m)*60;if(mode==='dm')return d+'° '+mm.toFixed(4)+"′ "+h;return d+'° '+m+"′ "+s.toFixed(2)+'″ '+h}
+function unit(m){const u=$('unit').value,f={m:1,km:.001,mi:1/1609.344,ft:3.280839895,nmi:1/1852},lab={m:'m',km:'km',mi:'mi',ft:'ft',nmi:'nmi'};let v=m*f[u];return v.toLocaleString(undefined,{maximumFractionDigits:v<10?4:2})+' '+lab[u]}
+function set(id,s){$(id).textContent=s}
+function notify(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>{$('toast').style.display='none'},3500)}
+function makeReport(a,b,d,ab,ba){return `GEOBEARING AI — FIELD REPORT\n${new Date().toLocaleString()}\n${labels.a} (A): ${a.lat.toFixed(7)}, ${a.lon.toFixed(7)}\n${labels.b} (B): ${b.lat.toFixed(7)}, ${b.lon.toFixed(7)}\nDistance: ${d.toFixed(2)} m (${unit(d)})\nInitial true bearing A → B: ${n(ab)}° ${dir(ab)}\nInitial true bearing B → A: ${n(ba)}° ${dir(ba)}\nMagnetic estimate A → B: ${n((ab-Number($('declination').value)+360)%360)}°\nMagnetic estimate B → A: ${n((ba-Number($('declination').value)+360)%360)}°\nA coordinates: ${coord(a.lat,'lat')}, ${coord(a.lon,'lon')}\nB coordinates: ${coord(b.lat,'lat')}, ${coord(b.lon,'lon')}\nGPS accuracy A: ${accuracy.a==null?'unknown':accuracy.a+' m'}\nGPS accuracy B: ${accuracy.b==null?'unknown':accuracy.b+' m'}\nNote: spherical distance; initial true bearings; verify magnetic declination before field use.`}
+function drawMap(a,b,ab){let box=$('mapbox');if(!a||!b){box.innerHTML='<div><strong>Enter both points</strong><br><span class="small">A local schematic will appear here.</span></div>';return}let dx=(b.lon-a.lon)*Math.cos(rad((a.lat+b.lat)/2)),dy=-(b.lat-a.lat),ang=Math.atan2(dy,dx),len=Math.min(120,Math.max(40,Math.sqrt(dx*dx+dy*dy)*5000));let cx=190,cy=105,x2=cx+Math.cos(ang)*len,y2=cy+Math.sin(ang)*len;box.innerHTML=`<svg viewBox="0 0 380 210" role="img" aria-label="Schematic of points A and B"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--line)" stroke-width=".6"/></pattern></defs><rect width="380" height="210" fill="url(#grid)"/><path d="M190 22 V188 M35 105 H345" stroke="var(--line)" stroke-dasharray="3 4"/><path d="M190 105 L${x2} ${y2}" stroke="var(--brand)" stroke-width="3" stroke-linecap="round"/><circle cx="190" cy="105" r="7" fill="#e05b48"/><circle cx="${x2}" cy="${y2}" r="7" fill="var(--brand)"/><text x="180" y="91" font-size="12" fill="var(--ink)" text-anchor="end">A</text><text x="${x2+10}" y="${y2-10}" font-size="12" fill="var(--ink)">B</text><text x="190" y="14" font-size="10" fill="var(--muted)" text-anchor="middle">N ↑</text><text x="190" y="202" font-size="10" fill="var(--muted)" text-anchor="middle">${n(ab)}° ${dir(ab)} · schematic only</text></svg>`}
+function render(){const a=point('a'),b=point('b');set('statusA',accuracy.a==null?'Manual coordinates or capture current position.':'Last GPS accuracy ±'+accuracy.a+' m');set('statusB',accuracy.b==null?'Manual coordinates or capture current position.':'Last GPS accuracy ±'+accuracy.b+' m');set('accuracy',`A: ${accuracy.a==null?'unknown':'±'+accuracy.a+' m'} · B: ${accuracy.b==null?'unknown':'±'+accuracy.b+' m'}`);set('declShow',Number($('declination').value||0).toFixed(2)+'°');if(!a||!b){['distance','distanceSub','bearing','bearingDir','ab','abDir','ba','baDir','magAB','magBA','fmtA','fmtB','dialBearing','dialDirection','azAB','azBA'].forEach(id=>set(id,'—'));lastReport='';$('needle').setAttribute('transform','rotate(0 60 60)');drawMap(a,b,0);return}const d=distance(a,b),ab=bearing(a,b),ba=bearing(b,a),dec=Number($('declination').value||0);set('distance',unit(d));set('distanceSub',d.toLocaleString(undefined,{maximumFractionDigits:2})+' metres');set('bearing',n(ab)+'°');set('bearingDir',dir(ab)+' · true north');set('ab',n(ab)+'°');set('abDir',dir(ab));set('ba',n(ba)+'°');set('baDir',dir(ba));set('magAB',n((ab-dec+360)%360)+'°');set('magBA',n((ba-dec+360)%360)+'°');set('fmtA',coord(a.lat,'lat')+' , '+coord(a.lon,'lon'));set('fmtB',coord(b.lat,'lat')+' , '+coord(b.lon,'lon'));set('dialBearing',n(ab)+'°');set('dialDirection',dir(ab)+' · A → B');set('azAB',n(ab)+'°');set('azBA',n(ba)+'°');$('needle').setAttribute('transform',`rotate(${ab} 60 60)`);drawMap(a,b,ab);lastReport=makeReport(a,b,d,ab,ba)}
+function gpsErrorMessage(e){
+  if(e.code===1) return 'PERMISSION BLOCKED. Allow Location for GeoBearing AI (or the browser hosting it), enable Precise location, then tap Capture GPS again. See Guide → GPS permission help.';
+  if(e.code===2) return 'POSITION UNAVAILABLE. Turn on the phone Location switch, enable Google Location Accuracy if available, move outdoors, and retry.';
+  if(e.code===3) return 'GPS TIMEOUT. Keep GeoBearing open, turn off Battery Saver temporarily, move into open sky, and retry. The first fix can take 1–2 minutes.';
+  return 'GPS failed. Confirm HTTPS, phone Location, and app/browser location permission; then retry.';
+}
+function permissionHelp(){
+  return 'Android: Settings → Apps → GeoBearing AI (or Chrome) → Permissions → Location → Allow while using the app; enable Use precise location. In Chrome, also check ⋮ → Settings → Site settings → Location and allow this website. Turn on the phone Location quick setting, return here, and tap Capture GPS again. If opened as a local HTML file or preview, use the HTTPS-hosted app instead.';
+}
+async function checkGpsPermission(p, announce){
+  const P=(p||'a').toUpperCase();
+  if(!window.isSecureContext && location.hostname!=='localhost' && location.hostname!=='127.0.0.1'){
+    set('status'+P,'GPS is blocked in this context because it is not secure. Open the app from its HTTPS website.'); return 'insecure';
+  }
+  if(!navigator.geolocation){set('status'+P,'This browser/context does not expose GPS. Try the HTTPS app in Chrome.');return 'unsupported';}
+  try{
+    if(!navigator.permissions || !navigator.permissions.query){
+      if(announce) set('status'+P,'Browser cannot pre-check permission. Tap Capture GPS to trigger the location request.');
+      return 'unknown';
+    }
+    const result=await navigator.permissions.query({name:'geolocation'});
+    if(result.state==='denied') set('status'+P,'Location permission is BLOCKED. '+permissionHelp());
+    else if(announce) set('status'+P,result.state==='granted'?'Location permission is allowed. Tap Capture GPS for a fresh fix.':'Location permission has not been decided; tap Capture GPS and choose Allow.');
+    return result.state;
+  }catch(e){if(announce)set('status'+P,'Tap Capture GPS and allow location when prompted.');return 'unknown';}
+}
+
+function stopWatch(p, message){
+  const P=p.toUpperCase();
+  if(watch[p]!==null){try{navigator.geolocation.clearWatch(watch[p])}catch(e){} watch[p]=null}
+  const btn=$('track'+P); if(btn) btn.textContent='▶ Track '+P;
+  if(message) set('status'+P,message);
+}
+function capture(p,track){
+  const P=p.toUpperCase();
+  if(!window.isSecureContext && location.hostname!=='localhost' && location.hostname!=='127.0.0.1'){
+    set('status'+P,'GPS requires HTTPS. Open the installed app from its HTTPS website; a downloaded HTML file cannot provide reliable GPS.');
+    return;
+  }
+  if(!navigator.geolocation){set('status'+P,'Geolocation is unavailable in this browser. Enter coordinates manually or use a supported browser.');return}
+  if(track && watch[p]!==null){stopWatch(p,'Tracking stopped.');return}
+  set('status'+P,track?'Starting high-accuracy GPS tracking…':'Requesting a fresh GPS fix…');
+  const opt={enableHighAccuracy:true,timeout:track?60000:90000,maximumAge:track?3000:0};
+  let gotFix=false;
+  const success=pos=>{
+    gotFix=true;
+    const c=pos.coords, age=Math.max(0,Date.now()-pos.timestamp);
+    $('lat'+P).value=Number(c.latitude).toFixed(7);
+    $('lon'+P).value=Number(c.longitude).toFixed(7);
+    accuracy[p]=Math.round(c.accuracy*10)/10;
+    const quality=c.accuracy<=10?'good':c.accuracy<=30?'fair':'weak';
+    const when=age<5000?'fresh fix':Math.round(age/1000)+'s old fix';
+    set('status'+P,(track?'Tracking':'Captured')+' · ±'+accuracy[p]+' m · '+quality+' · '+when+
+      (c.accuracy>30?' · move to open sky and wait for a better fix':''));
+    render();
+  };
+  const error=e=>{
+    const msg=gpsErrorMessage(e);
+    if(track){stopWatch(p,msg);if(gotFix)set('status'+P,'Tracking interrupted. Last fix retained. '+msg)}
+    else set('status'+P,msg);
+  };
+  if(track){
+    try{watch[p]=navigator.geolocation.watchPosition(success,error,opt);$('track'+P).textContent='■ Stop '+P}
+    catch(e){stopWatch(p,'Could not start GPS tracking. Check location permissions.')}
+  }else{
+    try{navigator.geolocation.getCurrentPosition(success,error,opt)}catch(e){set('status'+P,'Could not request GPS. '+gpsErrorMessage({code:0}));}
+  }
+}
+['latA','lonA','latB','lonB','format','unit','declination','precision'].forEach(id=>$(id).addEventListener('input',render));
+$('gpsA').onclick=()=>capture('a',false);$('gpsB').onclick=()=>capture('b',false);$('trackA').onclick=()=>capture('a',true);$('trackB').onclick=()=>capture('b',true);
+$('swap').onclick=()=>{for(const suffix of ['lat','lon']){const x=$(suffix+'A').value;$(suffix+'A').value=$(suffix+'B').value;$(suffix+'B').value=x}let l=labels.a;labels.a=labels.b;labels.b=l;let ac=accuracy.a;accuracy.a=accuracy.b;accuracy.b=ac;render();notify('Points swapped.')};
+$('labelA').onclick=()=>{const v=prompt('Name for Point A',labels.a);if(v&&v.trim())labels.a=v.trim();render()};$('labelB').onclick=()=>{const v=prompt('Name for Point B',labels.b);if(v&&v.trim())labels.b=v.trim();render()};
+$('copy').onclick=async()=>{if(!lastReport){set('copyStatus','Enter valid coordinates for both points.');return}try{await navigator.clipboard.writeText(lastReport);set('copyStatus','Report copied to clipboard.')}catch(e){set('copyStatus','Clipboard access unavailable. Use Export report instead.')}};
+$('download').onclick=()=>{if(!lastReport){set('copyStatus','Enter valid coordinates for both points.');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lastReport],{type:'text/plain'}));a.download='geobearing-field-report.txt';a.click();URL.revokeObjectURL(a.href)};
+$('share').onclick=async()=>{if(!lastReport){set('copyStatus','Enter valid coordinates for both points.');return}if(navigator.share){try{await navigator.share({title:'GeoBearing field report',text:lastReport})}catch(e){}}else set('copyStatus','Share is unavailable here. Use Copy report or Export report.');};
+function loadSites(){try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch(e){return []}}
+function storeSites(s){try{localStorage.setItem(storageKey,JSON.stringify(s));return true}catch(e){set('savedStatus','Storage unavailable in this preview. Export sites JSON to keep a backup.');return false}}
+function renderSites(){let list=$('savedList'),sites=loadSites();if(!sites.length){list.innerHTML='<p class="small">No saved site pairs yet.</p>';return}list.innerHTML='';sites.forEach((s,i)=>{let div=document.createElement('div');div.className='saved';let title=document.createElement('strong');title.textContent=s.name;div.appendChild(title);let meta=document.createElement('div');meta.className='meta';meta.textContent=`A ${s.a.lat.toFixed(5)}, ${s.a.lon.toFixed(5)} · B ${s.b.lat.toFixed(5)}, ${s.b.lon.toFixed(5)}`;div.appendChild(meta);let load=document.createElement('button');load.className='btn';load.textContent='Load';load.onclick=()=>{['A','B'].forEach(P=>{let q=s[P.toLowerCase()];$('lat'+P).value=q.lat;$('lon'+P).value=q.lon});labels.a=s.labelA||'Point A';labels.b=s.labelB||'Point B';accuracy={a:null,b:null};render();document.querySelector('[data-tab="calc"]').click();notify('Saved pair loaded.')};div.appendChild(load);let del=document.createElement('button');del.className='btn danger';del.textContent='Delete';del.onclick=()=>{let all=loadSites();all.splice(i,1);storeSites(all);renderSites()};div.appendChild(del);list.appendChild(div)})}
+$('savePair').onclick=()=>{let a=point('a'),b=point('b');if(!a||!b){set('savedStatus','Enter valid coordinates for both points first.');return}let name=prompt('Name this pair of locations','Field pair '+new Date().toLocaleDateString());if(!name)return;let s=loadSites();s.unshift({name,a,b,labelA:labels.a,labelB:labels.b,created:new Date().toISOString()});storeSites(s);renderSites();set('savedStatus','Pair saved on this device.')};
+$('exportSites').onclick=()=>{const blob=new Blob([JSON.stringify(loadSites(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='geobearing-sites.json';a.click();URL.revokeObjectURL(a.href)};
+$('importSites').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{const s=JSON.parse(await e.target.files[0].text());if(!Array.isArray(s))throw Error();const clean=s.filter(x=>x&&x.a&&x.b&&Number.isFinite(x.a.lat)&&Number.isFinite(x.a.lon)&&Number.isFinite(x.b.lat)&&Number.isFinite(x.b.lon)&&Math.abs(x.a.lat)<=90&&Math.abs(x.b.lat)<=90&&Math.abs(x.a.lon)<=180&&Math.abs(x.b.lon)<=180);storeSites([...clean,...loadSites()]);renderSites();set('savedStatus',`Imported ${clean.length} valid site pair(s).`)}catch(e){set('savedStatus','Could not import: check that this is a GeoBearing JSON export.')}e.target.value=''};
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));['calc','map','saved','help'].forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==btn.dataset.tab));if(btn.dataset.tab==='saved')renderSites()});
+
+render();renderSites();
+
+// Progressive Web App: offline shell + install prompt.
+let installPromptEvent=null;
+const installButton=$('installApp'), pwaStatus=$('pwaStatus'), secureHint=$('secureHint');
+function updatePwaStatus(){
+  const online=navigator.onLine;
+  const installed=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  pwaStatus.textContent=(online?'Online':'Offline')+' · '+(installed?'running as installed app':'web app')+' · saved site pairs stay on this device';
+  secureHint.textContent=(!window.isSecureContext && location.hostname!=='localhost' && location.hostname!=='127.0.0.1')
+    ?'GPS is blocked here: open the app from its HTTPS website. A downloaded HTML file or embedded preview may not receive location permission.'
+    :'GPS uses Android/browser permission. If capture fails, open Guide for exact permission steps; enable precise location and test outdoors.';
+}
+window.addEventListener('online',updatePwaStatus);
+window.addEventListener('offline',updatePwaStatus);
+window.addEventListener('appinstalled',()=>{installButton.hidden=true;notify('GeoBearing AI installed.');updatePwaStatus()});
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();installPromptEvent=e;installButton.hidden=false;
+  pwaStatus.textContent='Ready to install on this device. Offline shell is available after first load.';
+});
+installButton.addEventListener('click',async()=>{
+  if(installPromptEvent){
+    installPromptEvent.prompt();
+    try{await installPromptEvent.userChoice}catch(e){}
+    installPromptEvent=null;installButton.hidden=true;updatePwaStatus();
+  }else{
+    notify('If no install prompt appears, use the browser menu ⋮ and choose Install app or Add to Home screen.');
+  }
+});
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1')){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./service-worker.js').then(reg=>{
+      pwaStatus.textContent='Offline support enabled · app shell cached after first successful load';
+      if(reg.waiting) notify('An app update is ready. Close and reopen GeoBearing AI to apply it.');
+      reg.addEventListener('updatefound',()=>{
+        const worker=reg.installing;
+        if(worker) worker.addEventListener('statechange',()=>{
+          if(worker.state==='installed' && navigator.serviceWorker.controller) notify('GeoBearing update ready. Reopen the app to use it.');
+        });
+      });
+      updatePwaStatus();
+    }).catch(()=>{pwaStatus.textContent='Offline setup could not start. Confirm all PWA files are hosted together over HTTPS.';updatePwaStatus()});
+  });
+}else{
+  pwaStatus.textContent='Preview mode: offline installation needs HTTPS hosting.';
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible') updatePwaStatus();
+});
+// Diagnose permission state without prompting; the user gesture on Capture GPS triggers the real request.
+checkGpsPermission('a',false);
+updatePwaStatus();
+
+})();
+</script>
+</body></html>
